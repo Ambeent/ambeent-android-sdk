@@ -6,7 +6,7 @@
 ```
 
 ### Then use authToken as the username in your build.gradle:
-```
+```gradle
 allprojects {
     repositories {
         ...
