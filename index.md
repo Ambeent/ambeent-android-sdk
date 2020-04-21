@@ -20,13 +20,13 @@ allprojects {
 ### Edit your app build.gradle
 1. Set the `minSDKVersion` to `16`.
 2. Add these lines into the `dependencies block;
-```xml
+```gradle
 dependencies {        
  Implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v0.2'
 }
 ```
 3. Add this lines into the android block;
-```xml
+```gradle
 android {
 ...
  compileOptions { 
