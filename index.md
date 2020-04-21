@@ -121,7 +121,7 @@ Ambeent.WiFiBssidNullException
 ### Known Issues
 
 You should use 16.0.8 android service version for Google Play Services library.
-```java
+```gradle
 Implementation 'com.google.android.gms:play-services-analytics:16.0.8'
 ```
 Location is need to be checked. If it is disabled then you may want to ask user to enable it with following function.
