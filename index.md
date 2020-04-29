@@ -95,7 +95,7 @@ Define library constructor with app context, company id and customer id values.
 Company Id generated for `<COMPANYNAME>` is `<COMPANYID>`
 Customer Id can be anything to distinguish user, like user’s app id, user id, firebase token, for you to match user’s metrics, or can be left empty.
 ```java
-Ambeent ambeent = new Ambeent(getApplicationContext(),
+Ambeent ambeentSdk = new Ambeent(getApplicationContext(),
                              companyId, 
                              customerId);
 ```
@@ -107,8 +107,38 @@ int[] output = ambeent.sense(boolean discoverNetwork, boolean measureSpeed, bool
 String fidelity = output[0];  
 String bestChannel = output[1];
 String currentChannel = output[2];
-ambeent.traceRoute("www.google.com")
+ambeentSdk.traceRoute("www.google.com");
 ```
+
+**Modem Rating**
+```java
+ambeentSdk.modemRating(callback: StatisticsInterface);
+```
+with a callback to get 
+```java
+ModemInfo(staMac: String, modemMac: String)
+```
+for the connected router
+
+```java
+try {
+  getModemRating(new StatisticsInterface() {
+  @Override public Void onModemRating(ModemRating modemRating) { return null; }
+  @Override public Void onFailure() { return null; }
+ });
+}
+catch (WiFiNotEnabledException e) { e.printStackTrace(); }
+catch (WiFiConnectionNullException e) { e.printStackTrace(); }
+catch (WiFiBssidNullException e) { e.printStackTrace(); }
+catch (LocationNotGrantedException e) { e.printStackTrace(); }
+catch (LocationServiceNotEnabledException e) { e.printStackTrace(); }
+```
+
+**Trace Route**
+```java
+ambeentSdk.traceRoute('www.google.com');
+```
+to see user data on Ambeent Dashboard
 
 ### Exceptions
 Sense method throw following exceptions:
