@@ -2,8 +2,10 @@
 
 ### Add the token to gradle.properties
 ```
- authToken=<TOKEN>
+ authToken= <YOUR-API-TOKEN>
 ```
+
+**[Get Your Token](mailto:sales@ambeent.ai)**
 
 ### Then use authToken as the username in your build.gradle:
 ```gradle
@@ -18,11 +20,11 @@ allprojects {
 }
 ```
 ### Edit your app build.gradle
-1. Set the `minSDKVersion` to `16`.
+1. Mind that your `minSDKVersion` should not be lower than `16`.
 2. Add these lines into the `dependencies block;
 ```gradle
 dependencies {        
- Implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v0.2'
+ implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v0.2'
 }
 ```
 3. Add this lines into the android block;
@@ -122,7 +124,7 @@ Ambeent.WiFiBssidNullException
 
 You should use 16.0.8 android service version for Google Play Services library.
 ```gradle
-Implementation 'com.google.android.gms:play-services-analytics:16.0.8'
+implementation 'com.google.android.gms:play-services-analytics:16.0.8'
 ```
 Location is need to be checked. If it is disabled then you may want to ask user to enable it with following function.
 
@@ -150,4 +152,4 @@ return gps_enabled | | network_enabled;
 
 ### Support or Contact
 
-Having trouble with Ambeent Android SDK? Contact us via **sales@ambeent.ai** and we’ll help you sort it out.
+Having trouble with Ambeent Android SDK? **[Contact us](mailto:sales@ambeent.ai)** and we’ll help you sort it out.
