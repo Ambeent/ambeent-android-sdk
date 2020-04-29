@@ -2,7 +2,7 @@
 
 ### Add the token to gradle.properties
 ```
- authToken= <YOUR-API-TOKEN>
+ authToken= <YOUR-TOKEN>
 ```
 
 **[Get Your Token](mailto:sales@ambeent.ai)**
@@ -14,7 +14,7 @@ allprojects {
         ...
         maven {
             url "https://jitpack.io"
-            credentials { username authToken }
+            credentials { username <YOUR-TOKEN> }
         }
     }
 }
