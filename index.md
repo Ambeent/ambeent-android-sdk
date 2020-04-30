@@ -141,7 +141,6 @@ ambeentSdk.traceRoute('www.google.com');
 to see user data on Ambeent Dashboard
 
 ### Exceptions
-Sense method throw following exceptions:
 ```java
 Ambeent.LocationNotGrantedException
 Ambeent.LocationServiceNotEnabledException
