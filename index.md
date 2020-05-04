@@ -107,7 +107,6 @@ int[] output = ambeent.sense(boolean discoverNetwork, boolean measureSpeed, bool
 String fidelity = output[0];  
 String bestChannel = output[1];
 String currentChannel = output[2];
-ambeentSdk.traceRoute("www.google.com");
 ```
 
 **Modem Rating**
