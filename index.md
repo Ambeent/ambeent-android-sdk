@@ -139,6 +139,12 @@ ambeentSdk.traceRoute('www.google.com');
 ```
 to see user data on Ambeent Dashboard
 
+**Device Register**
+```java
+ambeentSdk.registerDevice(String deviceMac, String firebaseToken);
+```
+to save user device on Ambeent Dashboard and can be Firebase Notification with Firebase Token
+
 ### Exceptions
 Sense method throw following exceptions:
 ```java
