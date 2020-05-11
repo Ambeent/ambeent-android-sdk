@@ -24,7 +24,7 @@ allprojects {
 2. Add these lines into the `dependencies block;
 ```gradle
 dependencies {        
- implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v0.6'
+ implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v0.7'
 }
 ```
 3. Add this lines into the android block;
