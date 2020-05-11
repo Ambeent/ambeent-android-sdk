@@ -24,7 +24,7 @@ allprojects {
 2. Add these lines into the `dependencies block;
 ```gradle
 dependencies {        
- implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v0.3'
+ implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v0.6'
 }
 ```
 3. Add this lines into the android block;
@@ -138,6 +138,16 @@ catch (LocationServiceNotEnabledException e) { e.printStackTrace(); }
 ambeentSdk.traceRoute('www.google.com');
 ```
 to see user data on Ambeent Dashboard
+
+
+**Register Device**
+```java
+ambeentSdk..registerDevice(String null);
+```
+you can register client stations(mobile phones) to see their brand, model, os and varios information on Ambeent Dashboard.
+
+Also, if you register, their Firebase token, you can send manual or automatic notifications through our dashboard.
+
 
 ### Exceptions
 ```java
