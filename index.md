@@ -184,6 +184,7 @@ you can register client stations(mobile phones) to see their brand, model, os an
 Also, if you register, their Firebase token, you can send manual or automatic notifications through our dashboard.
 
 **Optimization**
+
 First make following initialization
 ```java
 private LifecycleRegistry lifecycleRegistry;
@@ -207,7 +208,7 @@ See the sample optimization function below
     Handler handler = new Handler(Looper.getMainLooper());
     handler.post(new Runnable() {
         public void run() {
-            liveData.observe(AmbeentModule.this, new Observer<String>() {
+            liveData.observe(this, new Observer<String>() {
                 @Override
                 public void onChanged(String s) {
                     Log.d("TAG",""+s);
@@ -218,7 +219,7 @@ See the sample optimization function below
 
     handler.post(new Runnable() {
         public void run() {
-          ambeent.setChannel(
+          ambeentSdk.setChannel(
                   bestChannel
                   liveData,  
                   getApplicationContext(),
@@ -228,6 +229,15 @@ See the sample optimization function below
     });
 
   }  
+```
+
+** Setting Custom Modem Credentials **
+```java
+public void saveCredentials(String username, String password){
+    
+	ambeentSdk.setCredentials(username, password);   
+    
+  }
 ```
 
 ### Exceptions
