@@ -231,7 +231,7 @@ See the sample optimization function below
   }  
 ```
 
-** Setting Custom Modem Credentials **
+**Setting Custom Modem Credentials**
 ```java
 public void saveCredentials(String username, String password){
     
