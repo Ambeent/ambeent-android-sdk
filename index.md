@@ -61,6 +61,15 @@ Add following statements into AndroidManifest.xml, just before <application ...t
 </uses-permission>
 ```
 
+Add CleartextTraffic functionality to enable optimization feature for the Android 9 (API 28) and above
+
+```xml
+<application
+      ...
+      android:usesCleartextTraffic="true"
+      ...>
+```
+
 ### Location Permission
 Following method can be used to ask user give your app location permission. Define it anywhere:
 
@@ -102,7 +111,27 @@ Ambeent ambeentSdk = new Ambeent(getApplicationContext(),
 Call sense function of library to calculate fidelity and current channel and best channel values. First three parameters of sense function are boolean values for discover network, measure speed and detect router model. Last parameter is an interface for defining succes or failure situations of modem detection. Sense function returns an integer array:
 
 ```java
-int[] output = ambeent.sense(boolean discoverNetwork, boolean measureSpeed, boolean detectRouterModel);
+int[] output = ambeent.sense(boolean discoverNetwork, boolean measureSpeed, boolean detectRouterModel,
+      new Ambeent.AmbeentCallback() {
+        
+        //Brand and model are defined as supported
+        @Override
+        public void routerDetected(String brand, String model) {
+            Log.e("AmbeentInterface", "routerDetected");
+        }
+
+        @Override
+        public void onFailure(String brand, String model) {
+            Log.e("AmbeentInterface", "onFailure");
+        }
+
+        @Override
+        public void undefinedRouter(String brand, String model, String[] strings) {
+            Log.e("AmbeentInterface", "undefinedRouter");
+        }
+
+      }
+);
 
 String fidelity = output[0];  
 String bestChannel = output[1];
@@ -139,15 +168,67 @@ ambeentSdk.traceRoute('www.google.com');
 ```
 to see user data on Ambeent Dashboard
 
+**YouTube Test**
+```java
+ambeentSdk.testYouTube();
+```
+to see streaming data on Ambeent Dashboard
+
 
 **Register Device**
 ```java
-ambeentSdk..registerDevice(String null);
+ambeentSdk.registerDevice(String null);
 ```
 you can register client stations(mobile phones) to see their brand, model, os and varios information on Ambeent Dashboard.
 
 Also, if you register, their Firebase token, you can send manual or automatic notifications through our dashboard.
 
+**Optimization**
+First make following initialization
+```java
+private LifecycleRegistry lifecycleRegistry;
+..
+lifecycleRegistry = new LifecycleRegistry(this);
+lifecycleRegistry.markState(Lifecycle.State.CREATED); 
+..
+...
+@Override
+  public Lifecycle getLifecycle(){
+    return lifecycleRegistry;
+  }  
+```
+See the sample optimization function below
+```java
+  public void optimize(){
+    lifecycleRegistry.markState(Lifecycle.State.STARTED);
+
+    // Handle each state of optimization with observing liveData
+    MutableLiveData<String> liveData = new MutableLiveData<String>();
+    Handler handler = new Handler(Looper.getMainLooper());
+    handler.post(new Runnable() {
+        public void run() {
+            liveData.observe(AmbeentModule.this, new Observer<String>() {
+                @Override
+                public void onChanged(String s) {
+                    Log.d("TAG",""+s);
+                }
+            });
+        }
+    });
+
+    handler.post(new Runnable() {
+        public void run() {
+          ambeent.setChannel(
+                  bestChannel
+                  liveData,  
+                  getApplicationContext(),
+                  Brand,
+                  Model);
+          }
+    });
+
+  }  
+```
 
 ### Exceptions
 ```java
