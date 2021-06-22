@@ -165,7 +165,7 @@ catch (LocationServiceNotEnabledException e) { e.printStackTrace(); }
 
 Call getRecommendation function of library to get recommendation of given mac adress. Last parameter is an interface for recommendation result.
 ```java
-       ambeent.getRecommendation(String modemMac,ambeentRecommendation);
+   ambeent.getRecommendation(String modemMac,new Ambeent.AmbeentRecommendation(){
 
         @Override
         public void recommendation(String recommendation) {
@@ -176,6 +176,8 @@ Call getRecommendation function of library to get recommendation of given mac ad
         public void failure(String message) {
             Log.e("AmbeentRecommendation", "failure");
         }
+       }
+   );
 ```
 **Register Device**
 ```java
