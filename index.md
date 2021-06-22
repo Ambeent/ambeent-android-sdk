@@ -162,6 +162,7 @@ catch (LocationNotGrantedException e) { e.printStackTrace(); }
 catch (LocationServiceNotEnabledException e) { e.printStackTrace(); }
 ```
 **Recommendation**
+
 Call getRecommendation function of library to get recommendation of given mac adress. Last parameter is an interface for recommendation result.
 ```java
        ambeent.getRecommendation(String modemMac,ambeentRecommendation);
