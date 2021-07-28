@@ -108,7 +108,7 @@ Ambeent ambeentSdk = new Ambeent(getApplicationContext(),
                              companyId, 
                              customerId);
 ```
-Call sense function of library to calculate fidelity and current channel and best channel values. First five parameters of sense function are boolean values for discover network, detect router model, streaming, traceRoute, speedtest. Need to enter username and password for login your router interface. Last parameter is an interface for defining succes or failure situations of modem detection. Sense function returns an integer array:
+Call sense function of library to calculate fidelity and current channel and best channel values. First five parameters of sense function are boolean values for discover network, detect router model, streaming, traceRoute, speedtest. Need to enter username and password for login your router interface.If your username and password is default, you can pass blank. Last parameter is an interface for defining succes or failure situations of modem detection. Sense function returns an integer array:
 
 ```java
 int[] output = ambeent.sense(boolean discoverNetwork, boolean measureSpeed, boolean detectRouterModel, boolean streaming, boolean traceRoute, boolean speedTest,  String username, String password,
@@ -201,7 +201,7 @@ lifecycleRegistry.markState(Lifecycle.State.CREATED);
     return lifecycleRegistry;
   }  
 ```
-Need to enter username and password for login your router interface.
+Need to enter username and password for login your router interface. If your username and password is default, you can pass blank.
 See the sample optimization function below
 ```java
   public void optimize(){
