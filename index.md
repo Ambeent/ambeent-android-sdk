@@ -20,7 +20,7 @@ allprojects {
 }
 ```
 ### Edit your app build.gradle
-1. Mind that your `minSDKVersion` should not be lower than `16`.
+1. Mind that your `minSDKVersion` should not be lower than `23`.
 2. Add these lines into the `dependencies block;
 ```gradle
 dependencies {        
