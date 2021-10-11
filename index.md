@@ -117,17 +117,17 @@ int[] output = ambeent.sense(boolean discoverNetwork, boolean measureSpeed, bool
         //Brand and model are defined as supported
         @Override
         public void routerDetected(String brand, String model) {
-            Log.e("AmbeentInterface", "routerDetected");
+            Log.e("AmbeentCallback", "routerDetected");
         }
 
         @Override
         public void onFailure(String brand, String model) {
-            Log.e("AmbeentInterface", "onFailure");
+            Log.e("AmbeentCallback", "onFailure");
         }
 
         @Override
         public void undefinedRouter(String brand, String model, String[] strings) {
-            Log.e("AmbeentInterface", "undefinedRouter");
+            Log.e("AmbeentCallback", "undefinedRouter");
         }
 
       }
