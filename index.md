@@ -1,4 +1,4 @@
-## Set up Ambeent library on Android
+## Set up Ambeent library for Android
 
 ### Add the token to gradle.properties
 ```
