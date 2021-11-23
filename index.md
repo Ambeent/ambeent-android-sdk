@@ -106,7 +106,8 @@ Customer Id can be anything to distinguish user, like user’s app id, user id, 
 ```java
 Ambeent ambeentSdk = new Ambeent(getApplicationContext(),
                              companyId, 
-                             customerId);
+                             customerId,
+                             firebaseToken);
 ```
 Call sense function of library to calculate fidelity and current channel and best channel values. First five parameters of sense function are boolean values for discover network, detect router model, streaming, traceRoute, speedtest. Need to enter username and password for login your router interface.If your username and password is default, you can pass blank. Last parameter is an interface for defining succes or failure situations of modem detection. Sense function returns an integer array:
 
@@ -128,6 +129,11 @@ int[] output = ambeent.sense(boolean discoverNetwork, boolean detectRouterModel,
         @Override
         public void undefinedRouter(String brand, String model, String[] strings) {
             Log.e("AmbeentCallback", "undefinedRouter");
+        }
+        
+        @Override
+        public void allTestsFinished() {
+            Log.e("AmbeentCallback", "All tests done");
         }
 
       }
