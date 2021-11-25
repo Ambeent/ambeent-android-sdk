@@ -53,8 +53,6 @@ Add following statements into AndroidManifest.xml, just before <application ...t
 </uses-permission>
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION">
 </uses-permission>
-<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION">
-</uses-permission>
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE">
 </uses-permission>
 <uses-permission android:name="android.permission.WAKE_LOCK">
