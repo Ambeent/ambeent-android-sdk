@@ -24,7 +24,7 @@ allprojects {
 2. Add these lines into the `dependencies block;
 ```gradle
 dependencies {        
- implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v1.8.7'
+ implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v1.8.8'
 }
 ```
 3. Add this lines into the android block;
@@ -98,14 +98,13 @@ checkLocationPermission();
 
 ### Integration Example
 
-Define library constructor with app context, company id and customer id values.
+Get instance from library and initialize with app context, company id and customer id values.
 Company Id generated for `<COMPANYNAME>` is `<COMPANYID>`
-Customer Id can be anything to distinguish user, like user’s app id, user id, firebase token, for you to match user’s metrics, or can be left empty.
+Customer Id can be anything to distinguish user, like user’s app id, user id, firebase token, for you to match user’s metrics, or can be left empty.(android 11 or higher can not send data without firebasetoken)
 ```java
-Ambeent ambeentSdk = new Ambeent(getApplicationContext(),
-                             companyId, 
-                             customerId,
-                             firebaseToken);
+            Ambeent ambeent=Ambeent.getInstance();
+            ambeentSdk.ambeentInit(getApplicationContext(), companyId, customerId,firebaseToken);
+ 
 ```
 Call sense function of library to calculate fidelity and current channel and best channel values. First five parameters of sense function are boolean values for discover network, detect router model, streaming, traceRoute, speedtest. Need to enter username and password for login your router interface.If your username and password is default, you can pass blank. Last parameter is an interface for defining succes or failure situations of modem detection. Sense function returns an integer array:
 
