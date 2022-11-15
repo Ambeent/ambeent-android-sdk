@@ -24,7 +24,7 @@ allprojects {
 2. Add these lines into the `dependencies block;
 ```gradle
 dependencies {        
- implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v1.9.4'
+ implementation 'com.gitlab.Ambeent.ambeent-android-sdk:ambeentutil:v1.9.5'
 }
 ```
 3. Add this lines into the android block;
@@ -97,6 +97,13 @@ checkLocationPermission();
 ```
 
 ### Integration Example
+Import: Add following import statemetents
+```java
+import com.wireless.ambeentutil.Ambeent;
+#AmbeentExceptions required on version v1.9.5 and afterwards
+import com.wireless.ambeentutil.AmbeentExceptions;
+ 
+```
 
 Get instance from library and initialize with app context, company id and customer id values.
 Company Id generated for `<COMPANYNAME>` is `<COMPANYID>`
@@ -247,13 +254,21 @@ See the sample optimization function below
   }  
 ```
 
-### Exceptions
+### Exceptions until and including v1.9.3 
 ```java
 Ambeent.LocationNotGrantedException
 Ambeent.LocationServiceNotEnabledException
 Ambeent.WiFiNotEnabledException
 Ambeent.WiFiConnectionNullException
 Ambeent.WiFiBssidNullException
+```
+### Exceptions in v1.9.5 and afterwards
+```java
+AmbeentExceptions.LocationNotGrantedException
+AmbeentExceptions.LocationServiceNotEnabledException
+AmbeentExceptions.WiFiNotEnabledException
+AmbeentExceptions.WiFiConnectionNullException
+AmbeentExceptions.WiFiBssidNullException
 ```
 
 ### Known Issues
