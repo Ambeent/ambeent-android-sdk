@@ -1,3 +1,4 @@
+***Note: The [`AMBEENTZERO`](https://gitlab.com/Ambeent/ambeent-android-sdk/-/tree/AMBEENTZERO) Branch will be used until the SDK is deployed into the GitLab packages.***
 ## Set up Ambeent library for Android
 
 ### Add the token to gradle.properties
@@ -70,33 +71,57 @@ Add CleartextTraffic functionality to enable optimization feature for the Androi
       ...>
 ```
 
-### Location Permission
-Following method can be used to ask user give your app location permission. Define it anywhere:
+## Requesting Location Permission
+
+To enable location-based features in our application, we need to request the user's permission to access their location. Here's how you can ask the user to grant location permission in your application:
 
 ```java
-public boolean checkLocationPermission() {
-  if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {  
-   AlertDialog.Builder builder;
-   builder = new AlertDialog.Builder(this);
-   builder.setTitle("Wifi Location Access Required")
-   .setCancelable(false)
-   .setMessage("For the full functionality, please give permission.")
-   .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-    public void onClick(DialogInterface dialog, int which) {
-     ActivityCompat.requestPermissions(MainActivity.this,
-       new String[]{Manifest.permission.ACCESS_FINE_LOCATION},    56);
-   }
- })
-   .show();
-   return false;
- }else return true;      
+// Check if location permission is granted
+private fun isLocationPermissionGranted(): Boolean {
+    val permissionStatus = ContextCompat.checkSelfPermission(
+        requireContext().applicationContext, Manifest.permission.ACCESS_FINE_LOCATION
+    )
+    return permissionStatus == PackageManager.PERMISSION_GRANTED
 }
+
+// Request location permission
+private fun requestLocationPermission() {
+    ActivityCompat.requestPermissions(
+        requireActivity(),
+        arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ),
+        PERMISSION_LOCATION_SERVICES
+    )
+}
+
+// Handle permission request result
+override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<String>,
+    grantResults: IntArray
+) {
+    when (requestCode) {
+        PERMISSION_LOCATION_SERVICES -> {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Location permission granted
+                // Perform your location-based operations here
+            } else {
+                // Location permission denied
+                // Handle the case where the user denied location permission
+            }
+        }
+        // Handle other permission request codes if any
+    }
+} 
 ```
 
-In order to ensure user has given the access, it is a good idea to call this function before using the library, preferably onstart of the related activity/fragment
-```java
-checkLocationPermission();
-```
+In your code snippet, you can use the isLocationPermissionGranted() function to check if the location permission is already granted. If not, you can call the requestLocationPermission() function to request the permission from the user. The onRequestPermissionsResult() method will handle the result of the permission request.
+
+Note: Make sure to add the necessary permissions to your AndroidManifest.xml file.
+
+
 
 ### Integration Example
 Import: Add following import statemetents
@@ -107,202 +132,242 @@ import com.wireless.ambeentutil.AmbeentExceptions;
  
 ```
 
-Get instance from library and initialize with app context, company id and customer id values.
-Company Id generated for `<COMPANYNAME>` is `<COMPANYID>`
-Customer Id can be anything to distinguish user, like user’s app id, user id, firebase token, for you to match user’s metrics, or can be left empty.(android 11 or higher can not send data without firebasetoken)
+Initialize with app context, company id.
+
 ```java
-Ambeent ambeent=Ambeent.getInstance();
-ambeentSdk.ambeentInit(getApplicationContext(), companyId, customerId,firebaseToken);
- 
+
+    ambeentSdk.registerDevice(getDeviceId(applicationContext),
+        PUBLIC_TESTING_COMPANY_ID, //The companyID to be used by the company using the SDK
+        object : RegisterDeviceCallback {
+            override fun onDeviceRegistered(deviceId: String): String? {
+                testRouterModelButton?.isEnabled = true
+                testTraceRouteButton?.isEnabled = true
+                testNetworkDiscoveryButton?.isEnabled = true
+                testWifiScanButton?.isEnabled = true
+                upload_download_test?.isEnabled = true
+                initializeUI(AmbeentDeviceId(deviceId))
+                Log.e("TAG", "onDeviceRegistered: The device id is not null $deviceId")
+
+                return deviceId
+            }
+
+            override fun onDeviceRegistrationFailed(t: Throwable) {
+                Log.e("TAG", "onDeviceRegistrationFailed: " + t.cause + "  " + t.message)
+                // handle error
+                //
+            }
+        })
+
+
+
 ```
-Call sense function of library to calculate fidelity and current channel and best channel values. First five parameters of sense function are boolean values for discover network, detect router model, streaming, traceRoute, speedtest. Need to enter username and password for login your router interface.If your username and password is default, you can pass blank. Last parameter is an interface for defining succes or failure situations of modem detection. Sense function returns an integer array:
-
-```java
-int[] output = ambeentSdk.sense(boolean discoverNetwork, boolean detectRouterModel, boolean streaming, boolean traceRoute, boolean speedTest,  String username, String password,
-      new Ambeent.AmbeentCallback() {
-        
-        //Brand and model are defined as supported
-        @Override
-        public void routerDetected(String brand, String model) {
-            Log.e("AmbeentCallback", "routerDetected");
-        }
-
-        @Override
-        public void onFailure(String brand, String model) {
-            Log.e("AmbeentCallback", "onFailure");
-        }
-
-        @Override
-        public void undefinedRouter(String brand, String model, String[] strings) {
-            Log.e("AmbeentCallback", "undefinedRouter");
-        }
-        
-        @Override
-        public void allTestsFinished() {
-            Log.e("AmbeentCallback", "All tests done");
-        }
-
-      }
-);
-
-String fidelity = output[0];  
-String bestChannel = output[1];
-String currentChannel = output[2];
+In the given code snippet, the lines:
+```kotlin
+testRouterModelButton?.isEnabled = true
+testTraceRouteButton?.isEnabled = true
+testNetworkDiscoveryButton?.isEnabled = true
+testWifiScanButton?.isEnabled = true
+upload_download_test?.isEnabled = true
 ```
-**Speed Test Function**
+are enabling the UI buttons. These buttons were previously disabled, and now they are being enabled. This means that the user can interact with these buttons and trigger the corresponding actions associated with them.
 
-Call setSpeedTestValues function to set your own speed test values.
+The purpose of disabling these buttons initially is to prevent the user from interacting with them until the device receives its device ID from the server.
 
-```java
-ambeentSdk.setSpeedTestValues(long downloadSpeed, long uploadSpeed, long ping);
+Once the ***device registration is successful***, and the onDeviceRegistered callback is triggered, the device ID is obtained. At this point, the UI buttons are enabled using the code mentioned above. This ensures that the user can only interact with these buttons after the device registration is complete and the device ID is available.
+
+
+The initializeUI function is also called, passing the obtained device ID as a parameter. 
+
+If the ***device registration fails***, the onDeviceRegistrationFailed callback is triggered
+In the onDeviceRegistrationFailed method, the Throwable object t represents the exception or error that occurred during the device registration process. Based on the provided code snippet, there are a few potential reasons why the device registration could fail, such as:
+
+>1. ***No Internet Connection:*** If the device does not have an active internet connection, the registration process will fail. This could be due to network connectivity issues, Wi-Fi or cellular data being turned off, or the device being in an area with no network coverage.
+
+>2. ***Missing Company ID:*** The PUBLIC_TESTING_COMPANY_ID is used as a parameter in the ambeentSdk.registerDevice method. If this company ID is missing or not provided correctly, it can result in a failed registration. The company ID is likely required by the server to associate the device with the correct company or organization.
+
+>3. ***Server Issues:*** There could be server-side problems that prevent the device registration from completing successfully. This could include server downtime, maintenance, or other issues on the server that affect the registration process.
+
+
+
+```markdown
+Create an instance of `AmbBuilder` and initialize it with the required parameters:
 ```
 
-**Modem Rating**
 ```java
-ambeentSdk.modemRating(callback: StatisticsInterface);
+builder = AmbBuilder(
+    ambeentDeviceId, // Parameter: ambeentDeviceId (Type: AmbeentDeviceId)
+    LocationServices.getFusedLocationProviderClient(requireContext().applicationContext), // Parameter: FusedLocationProviderClient (Type: FusedLocationProviderClient)
+    wifiManager, // Parameter: wifiManager (Type: WifiManager)
+    applicationContext, // Parameter: applicationContext (Type: Context)
+    telephony, // Parameter: telephony (Type: TelephonyManager)
+    geocoder // Parameter: geocoder (Type: Geocoder)
+)
+
 ```
-with a callback to get 
-```java
-ModemInfo(staMac: String, modemMac: String)
-```
-for the connected router
+> 1. ***ambeentDeviceId (Type: AmbeentDeviceId):*** This parameter represents the device ID specific to the Ambeent SDK 
+
+>2. ***LocationServices.getFusedLocationProviderClient(requireContext().applicationContext) (Type: FusedLocationProviderClient):*** This parameter is a FusedLocationProviderClient instance obtained from the LocationServices API. It is used to access the device's fused location provider, which provides a simplified interface for retrieving the device's location.
+
+>3. ***wifiManager (Type: WifiManager):*** This parameter represents a WifiManager instance. It is used to manage Wi-Fi connectivity on the device, including accessing information about available Wi-Fi networks, connecting to a specific network, or configuring Wi-Fi settings.
+
+>4. ***applicationContext (Type: Context):*** This parameter represents the application's context. It is used to access various resources and services provided by the Android framework, such as accessing system services or retrieving application-specific information.
+
+>5. ***telephony (Type: TelephonyManager):*** This parameter represents a TelephonyManager instance. It is used to access telephony-related information and services on the device, such as retrieving network operator details, signal strength, or call state.
+
+>6. ***geocoder (Type: Geocoder):*** This parameter represents a Geocoder instance. It is used for converting between geographic coordinates (latitude and longitude) and human-readable addresses or place names. It enables geocoding (address to coordinates) and reverse geocoding (coordinates to address) functionality.
+
+
+
+Set the desired test options by toggling the checkboxes and calling the appropriate builder methods:
 
 ```java
-try {
-  getModemRating(new StatisticsInterface() {
-  @Override public Void onModemRating(ModemRating modemRating) { return null; }
-  @Override public Void onFailure() { return null; }
- });
+testRouterModelButton?.setOnClickListener {
+    if (testRouterModelButton.isChecked) {
+        builder.setDetectRouterModel(true)
+    } else {
+        builder.setDetectRouterModel(false)
+    }
+    // ...
 }
-catch (WiFiNotEnabledException e) { e.printStackTrace(); }
-catch (WiFiConnectionNullException e) { e.printStackTrace(); }
-catch (WiFiBssidNullException e) { e.printStackTrace(); }
-catch (LocationNotGrantedException e) { e.printStackTrace(); }
-catch (LocationServiceNotEnabledException e) { e.printStackTrace(); }
+
+testTraceRouteButton?.setOnClickListener {
+    if (testTraceRouteButton.isChecked) {
+        builder.setTraceRoute(true)
+    } else {
+        builder.setTraceRoute(false)
+    }
+    // ...
+}
+
+testNetworkDiscoveryButton?.setOnClickListener {
+    if (testNetworkDiscoveryButton.isChecked) {
+        builder.setDiscoverNetwork(true)
+    } else {
+        builder.setDiscoverNetwork(false)
+    }
+    // ...
+}
+
+testWifiScanButton?.setOnClickListener {
+    if (testWifiScanButton.isChecked) {
+        builder.isTestWifi = true
+    } else {
+        builder.isTestWifi = false
+    }
+    // ...
+}
+
+upload_download_test?.setOnClickListener {
+    if (upload_download_test.isChecked) {
+        builder.setSpeedTest(true)
+    } else {
+        builder.setSpeedTest(false)
+    }
+    // ...
+}
+
+
 ```
-**Recommendation**
+The code snippet contains click listeners for different buttons. Each click listener checks the checked status of its associated button and performs a specific action using the `builder` object. These actions include enabling or disabling certain functionalities such as detecting router models, performing trace routes, discovering networks, testing Wi-Fi, and conducting speed tests. The specific action taken depends on whether the button is checked or not.
 
-Call getRecommendation function of library to get recommendation of given mac adress. Last parameter is an interface for recommendation result.
+
+Finally, execute the tests by calling the executeTest() method on the builder:
+
 ```java
-   ambeent.getRecommendation(String modemMac,new Ambeent.AmbeentRecommendation(){
-
-        @Override
-        public void recommendation(String recommendation) {
-            Log.e("AmbeentRecommendation", "recommendation");
-        }
-        
-        @Override
-        public void failure(String message) {
-            Log.e("AmbeentRecommendation", "failure");
-        }
-       }
-   );
-```
-**Register Device**
-```java
-ambeentSdk.registerDevice(String null);
-```
-you can register client stations(mobile phones) to see their brand, model, os and varios information on Ambeent Dashboard.
-
-Also, if you register, their Firebase token, you can send manual or automatic notifications through our dashboard.
-
-**Optimization**
-First make following initialization
-```java
-private LifecycleRegistry lifecycleRegistry;
-..
-lifecycleRegistry = new LifecycleRegistry(this);
-lifecycleRegistry.markState(Lifecycle.State.CREATED); 
-..
-...
-@Override
-  public Lifecycle getLifecycle(){
-    return lifecycleRegistry;
-  }  
-```
-Need to enter username and password for login your router interface. If your username and password is default, you can pass blank.
-See the sample optimization function below
-```java
-  public void optimize(){
-    lifecycleRegistry.markState(Lifecycle.State.STARTED);
-
-    // Handle each state of optimization with observing liveData
-    MutableLiveData<String> liveData = new MutableLiveData<String>();
-    Handler handler = new Handler(Looper.getMainLooper());
-    handler.post(new Runnable() {
-        public void run() {
-            liveData.observe(AmbeentModule.this, new Observer<String>() {
-                @Override
-                public void onChanged(String s) {
-                    Log.d("TAG",""+s);
+executeTestsButton?.setOnClickListener {
+    // Check if location services are enabled
+    if (!locationEnabled()) {
+        executeTestsButton.isEnabled = false
+        val snackBar = Snackbar.make(
+            requireView(), "Please enable location services", Snackbar.LENGTH_LONG
+        )
+        snackBar.show()
+        return@setOnClickListener
+    }
+    
+    // Check if location permission is granted
+    if (!isLocationPermissionGranted()) {
+        val snackBar = Snackbar.make(
+            requireView(), "Please grant location permission", Snackbar.LENGTH_LONG
+        )
+        snackBar.show()
+        return@setOnClickListener
+    }
+    
+    // Build and execute the tests
+    val testRunner = builder.build()
+    progressTextField.visibility = View.VISIBLE
+    progressBar.visibility = View.VISIBLE
+    var thread = testRunner.executeTest { msg, data ->
+        // Handle different message types (FAILURE, INPROGRESS, SUCCESS)
+        when (msg) {
+            MessageType.FAILURE -> {
+                // Handle failure response
+                if (data is Failure) {
+                    // Enable/disable buttons, show error message, etc.
+                    progressBar.visibility = View.GONE
+                    // ...
                 }
-            });
+            }
+            
+            MessageType.INPROGRESS -> {
+                // Handle in-progress response
+                if (data is InProgress) {
+                    // Disable buttons, update progress, etc.
+                    progressBar.visibility = View.VISIBLE
+                    progressTextField.text = """
+                        ${data.status}
+                        ${data.currentTest}
+                        ${data.completedTests}/${data.totalTests}
+                    """.trimIndent()
+                }
+            }
+            
+            MessageType.SUCCESS -> {
+                // Handle success response
+                if (data is Success) {
+                    // Enable buttons, show success message, etc.
+                    progressBar.visibility = View.GONE
+                    // ...
+                }
+            }
         }
-    });
+    }
+}
 
-    handler.post(new Runnable() {
-        public void run() {
-          ambeent.setChannel(
-                  bestChannel
-                  liveData,  
-                  getApplicationContext(),
-                  Brand,
-                  Model,
-                  username,
-                  password);
-          }
-    });
-
-  }  
 ```
+The provided code snippet sets a click listener for the `executeTestsButton`. Here's a brief explanation of what the code does:
 
-### Exceptions until and including v1.9.3 
-```java
-Ambeent.LocationNotGrantedException
-Ambeent.LocationServiceNotEnabledException
-Ambeent.WiFiNotEnabledException
-Ambeent.WiFiConnectionNullException
-Ambeent.WiFiBssidNullException
-```
-### Exceptions in v1.9.5 and afterwards
-```java
-AmbeentExceptions.LocationNotGrantedException
-AmbeentExceptions.LocationServiceNotEnabledException
-AmbeentExceptions.WiFiNotEnabledException
-AmbeentExceptions.WiFiConnectionNullException
-AmbeentExceptions.WiFiBssidNullException
-```
+- It first checks if location services are enabled. If not, it disables the `executeTestsButton`, displays a snackbar message requesting the user to enable location services, and returns from the click listener.
 
-### Known Issues
+- It then checks if location permission is granted. If not, it displays a snackbar message requesting the user to grant location permission and returns from the click listener.
+
+- If both location services are enabled and permission is granted, it proceeds to build and execute the tests using the `builder` object.
+
+- During the test execution, the visibility of `progressTextField` and `progressBar` is set to visible.
+
+- A thread is created to execute the tests, and within this thread, different message types (FAILURE, INPROGRESS, SUCCESS) are handled.
+
+- For FAILURE messages, appropriate actions can be taken, such as updating the UI to show error messages and hiding the progress bar.
+
+- For INPROGRESS messages, the UI can be updated to show the current test status, progress, and the number of completed tests out of the total.
+
+- For SUCCESS messages, the UI can be updated to show success messages, enable buttons, and hide the progress bar.
+
+Overall, this code snippet handles the button click event, performs pre-checks related to location services and permissions, executes tests asynchronously, and updates the UI based on different message types received during the test execution.
+
+
+
+
+
+## **Known Issues**
 
 You should use 16.0.8 android service version for Google Play Services library.
 ```gradle
 implementation 'com.google.android.gms:play-services-analytics:16.0.8'
 ```
-Location is need to be checked. If it is disabled then you may want to ask user to enable it with following function.
 
-```java
-Context context;
-public boolean isLocationServiceEnabled(Context context){
- LocationManager locationManager = null;
- boolean gps_enabled == false, network_enabled = false;
- if (locationManager == null )
-  locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-try {
-gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-}catch (Exception ex){
-    Log.e(TAG, ex);
-}
-try {
-   network_enabled = locationManager.isProviderEnabled(LocationManager.
-      NETWORK_PROVIDER);
-}catch (Exception ex){
-    Log.e(TAG, ex);
-}
-return gps_enabled | | network_enabled;   
-}
-```
 
-### Support or Contact
+## **Support or Contact**
 
 Having trouble with Ambeent Android SDK? **[Contact us](mailto:sales@ambeent.ai)** and we’ll help you sort it out.
